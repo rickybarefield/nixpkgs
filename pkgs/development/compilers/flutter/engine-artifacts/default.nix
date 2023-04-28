@@ -4,7 +4,6 @@
 , engineVersion
 , fetchzip
 , autoPatchelfHook
-
 , gtk3
 }:
 
@@ -80,7 +79,7 @@ let
       };
     };
 
-  mkArtifactDerivation = { platform ? null, variant ? null, archive, ... }@args:
+  mkArtifactDerivation = { platform ? null, variant ? null, archive,  ... }@args:
     let
       artifactDirectory = if platform == null then null else "${platform}${lib.optionalString (variant != null) "-${variant}"}";
       archiveBasename = lib.removeSuffix ".${(lib.last (lib.splitString "." archive))}" archive;
@@ -97,7 +96,11 @@ let
 
       nativeBuildInputs = [ autoPatchelfHook ];
 
-      installPhase = "cp -r . $out";
+      installPhase = 
+        ''
+          cp -r . $out
+          ln -s $out $out/linux-x64
+        '';
     } // args);
 
   artifactDerivations = {
